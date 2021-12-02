@@ -29,14 +29,30 @@ namespace Store
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            var builder = new ConfigurationBuilder();
+            builder.SetBasePath(env.ContentRootPath);
+            if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
+                builder.AddJsonFile($"appsettings.Development.json", optional: true).AddEnvironmentVariables();
+                //app.UseExceptionHandler("/Error");
+
+            }
+            else if (env.EnvironmentName == "Production")
+            {
+                builder.AddJsonFile($"appsettings.Production.json", optional: true).AddEnvironmentVariables();
+                app.UseExceptionHandler("/Error");
+                app.UseHsts();
+            }
+            else if (env.EnvironmentName == "ServerDebug")
+            {
+                app.UseDeveloperExceptionPage();
+                builder.AddJsonFile($"appsettings.ServerDebug.json", optional: true).AddEnvironmentVariables();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
+                app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
