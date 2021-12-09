@@ -111,7 +111,7 @@
                 form.append("id", deletedProductId);
 
                 var settings = {
-                    "url": "http://localhost/Store/Home/DeleteProduct",
+                    "url": "@Url.Content("~/Home/DeleteProduct")",
                     "method": "POST",
                     "timeout": 0,
                     "processData": false,
